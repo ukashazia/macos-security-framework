@@ -1,7 +1,8 @@
 set shell := ["bash", "-cu"]
 
 host_target := arch() + "-apple-darwin"
-publish_provenance := if env_var_or_default("GITHUB_ACTIONS", "") == "true" { "--provenance" } else { "" }
+github_actions := env_var_or_default("GITHUB_ACTIONS", "")
+publish_provenance := if github_actions == "true" { "--provenance" } else { "" }
 
 build:
     ./node_modules/.bin/napi build --release --platform --esm --target {{ host_target }}
@@ -24,13 +25,30 @@ pack: release-check
 
 bump version:
     npm version "{{ version }}" --no-git-tag-version --ignore-scripts
-    node -e 'const fs = require("node:fs"); const version = require("./package.json").version; const path = "Cargo.toml"; const cargo = fs.readFileSync(path, "utf8"); const updated = cargo.replace(/^version = "[^"]+"$/m, `version = "${version}"`); if (updated === cargo) throw new Error("Cargo.toml package version not found"); fs.writeFileSync(path, updated)'
+    node -e "const fs = require('node:fs'); \
+        const version = require('./package.json').version; \
+        const path = 'Cargo.toml'; \
+        const cargo = fs.readFileSync(path, 'utf8'); \
+        const updated = cargo.replace( \
+          /^version = \"[^\"]+\"$/m, \
+          'version = \"' + version + '\"', \
+        ); \
+        if (updated === cargo) { \
+          throw new Error('Cargo.toml package version not found'); \
+        } \
+        fs.writeFileSync(path, updated);"
     cargo metadata --format-version 1 --no-deps >/dev/null
 
 publish:
-    node -e "const tag = process.env.GITHUB_REF_NAME; const version = require('./package.json').version; if (tag && tag !== 'v' + version) throw new Error('release tag must be v' + version)"
+    node -e "const tag = process.env.GITHUB_REF_NAME; \
+        const version = require('./package.json').version; \
+        if (tag && tag !== 'v' + version) { \
+          throw new Error('release tag must be v' + version); \
+        }"
     npm ci --ignore-scripts
-    if [[ "${GITHUB_ACTIONS:-}" == "true" ]]; then just build-all; fi
+    if [[ "${GITHUB_ACTIONS:-}" == "true" ]]; then \
+        just build-all; \
+    fi
     npm publish --access public {{ publish_provenance }}
 
 clean:
