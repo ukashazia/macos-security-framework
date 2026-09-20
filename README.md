@@ -42,6 +42,8 @@ Published tarballs contain native binaries for both Apple Silicon and Intel Macs
 
 The release workflow calls only `just publish`. That recipe verifies the release tag, installs locked dependencies, builds both architectures, runs the npm publish lifecycle checks, and publishes the public package with provenance. Prereleases are ignored. Regular CI runs the same release checks and uploads the verified dual-architecture npm tarball as a build artifact.
 
+To publish locally instead, install both Rust targets, run `just build-all`, authenticate with `npm login`, and run `just publish`. Local publishing uses the authenticated npm session and omits GitHub-only provenance; the release gate rejects missing or stale artifacts.
+
 ## Examples
 
 ```js
