@@ -1,4 +1,4 @@
-# msf-ffi
+# macos-security-framework
 
 Synchronous JavaScript and TypeScript bindings for Apple’s Security framework, implemented with Rust [`security-framework` 3.7.0](https://crates.io/crates/security-framework/3.7.0) and [`napi-rs`](https://napi.rs/).
 
@@ -10,7 +10,7 @@ The binding covers certificates, identities, keys and signatures, keychains and 
 - Node.js 20 or newer
 
 ```sh
-npm install msf-ffi
+npm install macos-security-framework
 ```
 
 The npm package includes native addons for Apple Silicon and Intel Macs, so consumers do not need Rust or Xcode. The correct addon is selected automatically at runtime.
@@ -45,7 +45,7 @@ The release workflow calls only `just publish`. That recipe verifies the release
 ## Examples
 
 ```js
-import { DigestBuilder, DigestType, SecRandom } from "msf-ffi";
+import { DigestBuilder, DigestType, SecRandom } from "macos-security-framework";
 
 const nonce = new SecRandom().copyBytes(32);
 const digest = new DigestBuilder()
@@ -61,7 +61,7 @@ import {
   deleteGenericPassword,
   getGenericPassword,
   setGenericPassword,
-} from "msf-ffi";
+} from "macos-security-framework";
 
 setGenericPassword("com.example.app", "alice", Buffer.from("secret"));
 console.log(getGenericPassword("com.example.app", "alice").toString());
@@ -71,7 +71,7 @@ deleteGenericPassword("com.example.app", "alice");
 Secure Transport uses a TCP adapter because Rust’s generic `Read + Write` streams cannot cross Node-API:
 
 ```js
-import { ClientBuilder } from "msf-ffi";
+import { ClientBuilder } from "macos-security-framework";
 
 const result = new ClientBuilder().connect("example.com", "example.com", 443);
 if (result.stream) {

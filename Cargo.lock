@@ -87,7 +87,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "msf-ffi"
+name = "macos-security-framework"
 version = "0.1.0"
 dependencies = [
  "core-foundation",

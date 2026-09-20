@@ -31,7 +31,7 @@ jobs:
       - run: npm pack --ignore-scripts
       - uses: actions/upload-artifact@v4
         with:
-          name: msf-ffi-${{ github.sha }}
-          path: msf-ffi-*.tgz
+          name: macos-security-framework-${{ github.sha }}
+          path: macos-security-framework-*.tgz
           if-no-files-found: error
           retention-days: 14

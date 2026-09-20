@@ -23,8 +23,8 @@ const sources = [
 const artifacts = [
   "index.js",
   "index.d.ts",
-  "msf_ffi.darwin-arm64.node",
-  "msf_ffi.darwin-x64.node",
+  "macos_security_framework.darwin-arm64.node",
+  "macos_security_framework.darwin-x64.node",
 ];
 const newestSource = Math.max(
   ...(await Promise.all(sources.map(async (path) => (await stat(path)).mtimeMs))),

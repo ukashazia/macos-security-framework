@@ -1,5 +1,5 @@
 {
-  "name": "msf-ffi",
+  "name": "macos-security-framework",
   "version": "0.1.0",
   "description": "Complete JavaScript and TypeScript bindings for Rust security-framework on macOS",
   "keywords": [
@@ -11,11 +11,11 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ukashazia/msf-ffi.git"
+    "url": "git+https://github.com/ukashazia/macos-security-framework.git"
   },
-  "homepage": "https://github.com/ukashazia/msf-ffi#readme",
+  "homepage": "https://github.com/ukashazia/macos-security-framework#readme",
   "bugs": {
-    "url": "https://github.com/ukashazia/msf-ffi/issues"
+    "url": "https://github.com/ukashazia/macos-security-framework/issues"
   },
   "license": "MIT",
   "author": "Ukasha",
@@ -32,8 +32,8 @@
   "files": [
     "index.js",
     "index.d.ts",
-    "msf_ffi.darwin-arm64.node",
-    "msf_ffi.darwin-x64.node",
+    "macos_security_framework.darwin-arm64.node",
+    "macos_security_framework.darwin-x64.node",
     "README.md",
     "LICENSE"
   ],
@@ -69,8 +69,8 @@
   },
   "sideEffects": false,
   "napi": {
-    "binaryName": "msf_ffi",
-    "packageName": "msf-ffi",
+    "binaryName": "macos_security_framework",
+    "packageName": "macos-security-framework",
     "targets": [
       "aarch64-apple-darwin",
       "x86_64-apple-darwin"
