@@ -1,6 +1,6 @@
 [package]
 name = "macos-security-framework"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 rust-version = "1.88"
 description = "Node.js bindings for the macOS Security framework"
@@ -9,15 +9,25 @@ build = "build.rs"
 publish = false
 
 [lib]
-crate-type = ["cdylib"]
+crate-type = [ "cdylib" ]
 
 [dependencies]
 core-foundation = "0.10"
 libc = "0.2"
-napi = { version = "3", default-features = false, features = ["napi8"] }
 napi-derive = "3"
-security-framework = { version = "=3.7.0", features = ["OSX_10_15", "macos-12", "sync-keychain", "job-bless"] }
-security-framework-sys = { version = "=2.17.0", features = ["OSX_10_15", "macos-12"] }
+
+[dependencies.napi]
+version = "3"
+default-features = false
+features = [ "napi8" ]
+
+[dependencies.security-framework]
+version = "=3.7.0"
+features = [ "OSX_10_15", "macos-12", "sync-keychain", "job-bless" ]
+
+[dependencies.security-framework-sys]
+version = "=2.17.0"
+features = [ "OSX_10_15", "macos-12" ]
 
 [build-dependencies]
 napi-build = "2"
