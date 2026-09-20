@@ -3,7 +3,7 @@ set shell := ["bash", "-cu"]
 host_target := arch() + "-apple-darwin"
 
 build:
-    ./node_modules/.bin/napi build --release --platform --esm --target {{host_target}}
+    ./node_modules/.bin/napi build --release --platform --esm --target {{ host_target }}
 
 build-all:
     ./node_modules/.bin/napi build --release --platform --esm --target aarch64-apple-darwin
