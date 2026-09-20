@@ -1,6 +1,6 @@
 set shell := ["bash", "-cu"]
 
-host_target := `cargo -vV | sed -n 's/^host: //p'`
+host_target := arch() + "-apple-darwin"
 
 build:
     ./node_modules/.bin/napi build --release --platform --esm --target {{host_target}}
