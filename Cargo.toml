@@ -6,6 +6,7 @@ rust-version = "1.88"
 description = "Node.js bindings for the macOS Security framework"
 license = "MIT"
 build = "build.rs"
+publish = false
 
 [lib]
 crate-type = ["cdylib"]
@@ -20,3 +21,8 @@ security-framework-sys = { version = "=2.17.0", features = ["OSX_10_15", "macos-
 
 [build-dependencies]
 napi-build = "2"
+
+[profile.release]
+codegen-units = 1
+lto = "thin"
+strip = "symbols"

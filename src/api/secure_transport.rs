@@ -41,10 +41,19 @@ fn native_certificates(
         .collect()
 }
 
-fn cipher_suites(values: Vec<u32>) -> Vec<CipherSuite> {
+fn cipher_suites(values: Vec<u32>) -> Result<Vec<CipherSuite>> {
     values
         .into_iter()
-        .map(|value| CipherSuite::from_raw(value as u16))
+        .map(|value| {
+            u16::try_from(value)
+                .map(CipherSuite::from_raw)
+                .map_err(|_| {
+                    Error::new(
+                        Status::InvalidArg,
+                        format!("TLS cipher suite must fit in 16 bits: {value}"),
+                    )
+                })
+        })
         .collect()
 }
 
@@ -344,7 +353,7 @@ impl SslContext {
     #[napi]
     pub fn set_enabled_ciphers(&mut self, ciphers: Vec<u32>) -> Result<&Self> {
         self.inner_mut()?
-            .set_enabled_ciphers(&cipher_suites(ciphers))
+            .set_enabled_ciphers(&cipher_suites(ciphers)?)
             .map_err(napi_error)?;
         Ok(self)
     }
@@ -833,15 +842,15 @@ impl ClientBuilder {
     }
 
     #[napi]
-    pub fn whitelist_ciphers(&mut self, ciphers: Vec<u32>) -> &Self {
-        self.inner.whitelist_ciphers(&cipher_suites(ciphers));
-        self
+    pub fn whitelist_ciphers(&mut self, ciphers: Vec<u32>) -> Result<&Self> {
+        self.inner.whitelist_ciphers(&cipher_suites(ciphers)?);
+        Ok(self)
     }
 
     #[napi]
-    pub fn blacklist_ciphers(&mut self, ciphers: Vec<u32>) -> &Self {
-        self.inner.blacklist_ciphers(&cipher_suites(ciphers));
-        self
+    pub fn blacklist_ciphers(&mut self, ciphers: Vec<u32>) -> Result<&Self> {
+        self.inner.blacklist_ciphers(&cipher_suites(ciphers)?);
+        Ok(self)
     }
 
     #[napi]

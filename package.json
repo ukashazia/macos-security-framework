@@ -2,27 +2,43 @@
   "name": "msf-ffi",
   "version": "0.1.0",
   "description": "Complete JavaScript and TypeScript bindings for Rust security-framework on macOS",
+  "keywords": [
+    "macos",
+    "security-framework",
+    "keychain",
+    "cryptography",
+    "napi-rs"
+  ],
   "type": "module",
+  "sideEffects": false,
   "main": "index.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
       "types": "./index.d.ts",
-      "import": "./index.js"
+      "import": "./index.js",
+      "default": "./index.js"
     }
   },
   "files": [
     "index.js",
     "index.d.ts",
-    "*.node",
+    "msf_ffi.darwin-arm64.node",
+    "msf_ffi.darwin-x64.node",
     "README.md",
     "LICENSE"
   ],
   "scripts": {
-    "build": "napi build --release --platform --esm",
-    "build:debug": "napi build --platform --esm",
+    "build": "napi build --release --platform --esm --target $(cargo -vV | sed -n 's/^host: //p')",
+    "build:all": "napi build --release --platform --esm --target aarch64-apple-darwin && napi build --release --platform --esm --target x86_64-apple-darwin",
+    "build:debug": "napi build --platform --esm --target $(cargo -vV | sed -n 's/^host: //p')",
     "check": "cargo fmt --all -- --check && cargo clippy --all-targets -- -D warnings && tsc --noEmit",
-    "test": "node --test test/*.test.js"
+    "test": "node --test test/*.test.js",
+    "verify": "npm run check && npm test",
+    "verify:artifacts": "node scripts/verify-artifacts.mjs",
+    "release:check": "npm run verify && npm run verify:artifacts && npm pack --dry-run --ignore-scripts",
+    "prepack": "npm run verify:artifacts",
+    "prepublishOnly": "npm run release:check"
   },
   "devDependencies": {
     "@napi-rs/cli": "^3.0.0",
@@ -30,7 +46,12 @@
     "typescript": "^6.0.0"
   },
   "napi": {
-    "binaryName": "msf_ffi"
+    "binaryName": "msf_ffi",
+    "packageName": "msf-ffi",
+    "targets": [
+      "aarch64-apple-darwin",
+      "x86_64-apple-darwin"
+    ]
   },
   "engines": {
     "node": ">=20"
@@ -42,5 +63,8 @@
     "arm64",
     "x64"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  }
 }

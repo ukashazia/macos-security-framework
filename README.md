@@ -6,7 +6,7 @@ The binding covers certificates, identities, keys and signatures, keychains and 
 
 ## Requirements
 
-- macOS 10.15 or newer
+- macOS 12 or newer
 - Node.js 20 or newer
 - Rust 1.88 or newer
 - Xcode Command Line Tools
@@ -22,6 +22,20 @@ just check
 ```
 
 `napi-rs` generates `index.js`, `index.d.ts`, and the platform `.node` addon. They are build artifacts; the maintained API lives in the domain modules under `src/api`.
+
+## Release
+
+Published tarballs contain native binaries for both Apple Silicon and Intel Macs. Install both Rust targets before producing one:
+
+```sh
+rustup target add aarch64-apple-darwin x86_64-apple-darwin
+npm ci --ignore-scripts
+just build-all
+just release-check
+just pack
+```
+
+`release-check` rejects missing, empty, or stale generated files, then runs Rust formatting and Clippy, strict TypeScript compilation, native tests, and an npm package dry-run. CI runs the same path with Node.js 20 and Rust 1.88, the package's minimum supported versions, and uploads the verified dual-architecture npm tarball as a build artifact.
 
 ## Examples
 

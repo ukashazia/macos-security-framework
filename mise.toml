@@ -1,2 +1,4 @@
 [tools]
-bun = "latest"
+just = "1"
+node = "20"
+rust = "1.88.0"

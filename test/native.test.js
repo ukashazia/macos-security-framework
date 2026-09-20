@@ -5,6 +5,7 @@ import {
   __napiBindingTarget,
   DigestBuilder,
   DigestType,
+  ItemSearchOptions,
   SecCode,
   SecRandom,
   SslConnectionType,
@@ -30,6 +31,24 @@ test("typed digest bindings accept and return buffers", () => {
   assert.equal(
     digest.toString("hex"),
     "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+  );
+});
+
+test("invalid numeric inputs are rejected at the JavaScript boundary", () => {
+  assert.throws(
+    () => new DigestBuilder().length(0),
+    /digest length must be positive/,
+  );
+  assert.throws(
+    () => new ItemSearchOptions().limit(-1),
+    /item search limit must be positive/,
+  );
+  assert.throws(
+    () =>
+      new SslContext(SslSide.Client, SslConnectionType.Stream).setEnabledCiphers([
+        0x1_0000,
+      ]),
+    /TLS cipher suite must fit in 16 bits/,
   );
 });
 

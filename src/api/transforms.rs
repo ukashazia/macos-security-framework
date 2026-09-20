@@ -1,5 +1,6 @@
 use core_foundation::data::CFData;
 use napi::bindgen_prelude::{Buffer, Result};
+use napi::{Error, Status};
 use napi_derive::napi;
 use security_framework::os::macos::digest_transform::{
     Builder as NativeDigestBuilder, DigestType as NativeDigestType,
@@ -65,9 +66,22 @@ impl DigestBuilder {
     }
 
     #[napi]
-    pub fn length(&mut self, length: i64) -> &Self {
-        self.inner.length(length as isize);
-        self
+    pub fn length(&mut self, length: i64) -> Result<&Self> {
+        let length = isize::try_from(length).map_err(|_| {
+            Error::new(
+                Status::InvalidArg,
+                format!("digest length is out of range: {length}"),
+            )
+        })?;
+        if length <= 0 {
+            return Err(Error::new(
+                Status::InvalidArg,
+                "digest length must be positive",
+            ));
+        }
+
+        self.inner.length(length);
+        Ok(self)
     }
 
     #[napi]

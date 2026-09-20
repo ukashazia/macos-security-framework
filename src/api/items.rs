@@ -2,6 +2,7 @@ use std::collections::HashMap;
 
 use core_foundation::data::CFData;
 use napi::bindgen_prelude::{Buffer, ClassInstance, Result};
+use napi::{Error, Status};
 use napi_derive::napi;
 use security_framework::item::{
     AddRef, CloudSync as NativeCloudSync, ItemAddOptions as NativeItemAddOptions, ItemAddValue,
@@ -207,9 +208,16 @@ impl ItemSearchOptions {
     }
 
     #[napi]
-    pub fn limit(&mut self, limit: i64) -> &Self {
+    pub fn limit(&mut self, limit: i64) -> Result<&Self> {
+        if limit <= 0 {
+            return Err(Error::new(
+                Status::InvalidArg,
+                "item search limit must be positive",
+            ));
+        }
+
         self.inner.limit(limit);
-        self
+        Ok(self)
     }
 
     #[napi]
