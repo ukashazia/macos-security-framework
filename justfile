@@ -29,4 +29,4 @@ publish:
     npm publish --access public {{ publish_provenance }}
 
 clean:
-    cargo clean
+    rm -rf -- target node_modules index.js index.d.ts *.node *.tgz .DS_Store
