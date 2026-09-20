@@ -21,5 +21,11 @@ release-check:
 pack: release-check
     npm pack --ignore-scripts
 
+publish:
+    node -e "const version = require('./package.json').version; if (process.env.GITHUB_REF_NAME !== 'v' + version) throw new Error('release tag must be v' + version)"
+    npm ci --ignore-scripts
+    just build-all
+    npm publish --access public --provenance
+
 clean:
     cargo clean

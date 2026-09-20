@@ -34,17 +34,13 @@ just check
 
 ## Release
 
-Published tarballs contain native binaries for both Apple Silicon and Intel Macs. Install both Rust targets before producing one:
+Published tarballs contain native binaries for both Apple Silicon and Intel Macs. To publish a release:
 
-```sh
-rustup target add aarch64-apple-darwin x86_64-apple-darwin
-npm ci --ignore-scripts
-just build-all
-just release-check
-just pack
-```
+1. Add an npm granular access token with publish permission as the GitHub repository secret `NPM_TOKEN`.
+2. Update `version` in `package.json` and `package-lock.json`.
+3. Create and publish a non-prerelease GitHub Release tagged `v<version>`, such as `v0.1.0`.
 
-`release-check` rejects missing, empty, or stale generated files, then runs Rust formatting and Clippy, strict TypeScript compilation, native tests, and an npm package dry-run. CI runs the same path with Node.js 20 and Rust 1.88, the package's minimum supported versions, and uploads the verified dual-architecture npm tarball as a build artifact.
+The release workflow calls only `just publish`. That recipe verifies the release tag, installs locked dependencies, builds both architectures, runs the npm publish lifecycle checks, and publishes the public package with provenance. Prereleases are ignored. Regular CI runs the same release checks and uploads the verified dual-architecture npm tarball as a build artifact.
 
 ## Examples
 
