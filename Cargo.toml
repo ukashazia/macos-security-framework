@@ -2,7 +2,7 @@
 name = "msf-ffi"
 version = "0.1.0"
 edition = "2024"
-rust-version = "1.85"
+rust-version = "1.88"
 description = "Node.js bindings for the macOS Security framework"
 license = "MIT"
 build = "build.rs"
@@ -13,8 +13,10 @@ crate-type = ["cdylib"]
 [dependencies]
 core-foundation = "0.10"
 libc = "0.2"
-napi = { version = "3", default-features = false, features = ["napi4"] }
+napi = { version = "3", default-features = false, features = ["napi8"] }
 napi-derive = "3"
 security-framework = { version = "=3.7.0", features = ["OSX_10_15", "macos-12", "sync-keychain", "job-bless"] }
 security-framework-sys = { version = "=2.17.0", features = ["OSX_10_15", "macos-12"] }
-serde_json = "1"
+
+[build-dependencies]
+napi-build = "2"

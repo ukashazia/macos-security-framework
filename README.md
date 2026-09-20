@@ -1,31 +1,36 @@
 # msf-ffi
 
-Synchronous JavaScript and TypeScript bindings for Apple’s Security framework, implemented on top of Rust [`security-framework` 3.7.0](https://crates.io/crates/security-framework/3.7.0).
+Synchronous JavaScript and TypeScript bindings for Apple’s Security framework, implemented with Rust [`security-framework` 3.7.0](https://crates.io/crates/security-framework/3.7.0) and [`napi-rs`](https://napi.rs/).
 
-The package covers the crate’s public API across certificates, identities, keys and signatures, keychains and passwords, item search/add/update, trust and trust settings, policies, PKCS#12 and general imports, CMS, Authorization Services, code signing, cryptographic transforms, randomness, and Secure Transport. macOS-only extension traits are folded into the corresponding JavaScript classes.
+The binding covers certificates, identities, keys and signatures, keychains and passwords, item search/add/update, policies and trust, trust settings, PKCS#12 and general imports, CMS, Authorization Services, code signing, cryptographic transforms, randomness, cipher suites, and Secure Transport. macOS-only extension traits are folded into the corresponding JavaScript classes.
 
 ## Requirements
 
 - macOS 10.15 or newer
 - Node.js 20 or newer
-- Rust 1.85 or newer and the Xcode Command Line Tools
+- Rust 1.88 or newer
+- Xcode Command Line Tools
+- [`just`](https://github.com/casey/just) for the convenience recipes
 
-## Build and use
+## Build and test
 
 ```sh
-npm run build
+npm install
+just build
+just test
+just check
 ```
 
+`napi-rs` generates `index.js`, `index.d.ts`, and the platform `.node` addon. They are build artifacts; the maintained API lives in the domain modules under `src/api`.
+
+## Examples
+
 ```js
-import {
-  DigestBuilder,
-  DigestType,
-  SecRandom,
-} from "msf-ffi";
+import { DigestBuilder, DigestType, SecRandom } from "msf-ffi";
 
 const nonce = new SecRandom().copyBytes(32);
 const digest = new DigestBuilder()
-  .type(DigestType.sha2)
+  .digestType(DigestType.Sha2)
   .length(256)
   .execute(nonce);
 ```
@@ -44,48 +49,53 @@ console.log(getGenericPassword("com.example.app", "alice").toString());
 deleteGenericPassword("com.example.app", "alice");
 ```
 
-Secure Transport uses a small TCP adapter because Rust’s `Read + Write` generics cannot cross the Node ABI:
+Secure Transport uses a TCP adapter because Rust’s generic `Read + Write` streams cannot cross Node-API:
 
 ```js
 import { ClientBuilder } from "msf-ffi";
 
-const tls = new ClientBuilder().connect("example.com", "example.com", 443);
-tls.write("GET / HTTP/1.1\r\nHost: example.com\r\nConnection: close\r\n\r\n");
-console.log(tls.read(16 * 1024).toString());
-tls.close();
+const result = new ClientBuilder().connect("example.com", "example.com", 443);
+if (result.stream) {
+  result.stream.write(
+    Buffer.from("GET / HTTP/1.1\r\nHost: example.com\r\nConnection: close\r\n\r\n"),
+  );
+  console.log(result.stream.read(16 * 1024).toString());
+  result.stream.close();
+}
 ```
 
-Authentication breakpoints are preserved. An interrupted low-level handshake throws `HandshakeError` with a resumable `stream`; an interrupted client-builder handshake throws `ClientHandshakeError` with a resumable `builder`. Both expose the Rust mid-handshake inspection methods.
+Low-level and client-builder handshakes return typed result objects. An authentication breakpoint contains a resumable `MidHandshakeSslStream` or `MidHandshakeClientBuilder`; terminal failures throw a JavaScript error.
 
 All calls are synchronous, matching the Rust crate. Run blocking network, authorization-prompt, and keychain-prompt operations in a Worker when they must not block the Node event loop.
 
 ## API mapping
 
-JavaScript uses camelCase, while every method also receives a snake_case alias matching the Rust spelling. Module-shaped exports such as `certificate`, `item`, `secure_transport`, and `os.macos.code_signing` make Rust examples mechanically portable. Top-level Rust function aliases such as `set_generic_password`, `update_item`, and `cms_encode_content` are also exported.
+- Rust structs become native JavaScript classes whose lifetimes are managed by Node-API.
+- Rust methods and functions are generated as camelCase JavaScript names.
+- Builder methods return `this` where the Rust builder is mutable.
+- Rust byte slices and `CFData` become `Buffer`.
+- Rust enums become generated TypeScript string or numeric enums.
+- Core Foundation dates become Unix timestamps in milliseconds.
+- Bitflags remain composable numbers; named values are exported by `accessControlFlags()`, `authorizationFlags()`, `cmsSignedAttributes()`, `codeSigningFlags()`, `revocationPolicyFlags()`, and `trustFlags()`.
+- Security framework failures become JavaScript exceptions.
+- `cipherSuites()` returns the complete name-to-value map for `CipherSuite` constants.
 
-Rust constructors are available as static `new()` factories alongside idiomatic JavaScript constructors. Generic streams are adapted to TCP endpoints, Core Foundation containers become typed JavaScript values, and pointer-only details are folded into the safe builders that own them.
+The generated `index.d.ts` is the authoritative API reference for JavaScript and TypeScript consumers.
 
-Core Foundation values are translated at the boundary:
+## Source layout
 
-| Rust value | JavaScript value |
-| --- | --- |
-| `CFData`, byte slices | `Buffer` |
-| `CFString` | `string` |
-| `CFDate` | `Date` |
-| `CFURL` file URL | filesystem path `string` |
-| bitflags | `number` |
-| Security framework reference | disposable class instance |
-| builder `CFDictionary` | typed JavaScript builder |
-
-Native reference wrappers provide `dispose()` and are also released by a `FinalizationRegistry`. Explicit disposal is recommended for long-running processes.
-
-Errors are thrown as `SecurityFrameworkError`; its `code` property is populated when the OSStatus can be recovered from the native message. Keychain, trust-setting, authorization, and code-signing calls can prompt or fail based on the host process’s signature, entitlements, sandbox, and UI session.
-
-## Development
-
-```sh
-npm run build
-npm test
+```text
+src/api/
+  security.rs          certificates, identities, keys, policies, trust
+  keychain.rs          keychains and macOS password operations
+  passwords.rs         portable password APIs
+  items.rs             item search, add, update, and references
+  imports.rs           PKCS#12 and general imports
+  cms.rs               CMS encoder and decoder
+  transforms.rs        digest and encryption transforms
+  secure_transport.rs  TLS contexts, builders, streams, handshake states
+  macos.rs              trust settings, code signing, authorization
+  cipher_suites.rs     Secure Transport cipher constants
+  random.rs            secure randomness
+  error.rs             error conversion
 ```
-
-The native bridge uses the stable Node-API through `napi-rs`; Security operations are delegated to the pinned Rust crate and its Core Foundation dependencies.

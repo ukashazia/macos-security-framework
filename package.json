@@ -14,15 +14,23 @@
   "files": [
     "index.js",
     "index.d.ts",
-    "cipher-suites.js",
-    "native/*.node",
+    "*.node",
     "README.md",
     "LICENSE"
   ],
   "scripts": {
-    "build": "cargo build --release && node scripts/install-native.js",
-    "build:debug": "cargo build && node scripts/install-native.js debug",
-    "test": "node --test"
+    "build": "napi build --release --platform --esm",
+    "build:debug": "napi build --platform --esm",
+    "check": "cargo fmt --all -- --check && cargo clippy --all-targets -- -D warnings && tsc --noEmit",
+    "test": "node --test test/*.test.js"
+  },
+  "devDependencies": {
+    "@napi-rs/cli": "^3.0.0",
+    "@types/node": "^24.0.0",
+    "typescript": "^6.0.0"
+  },
+  "napi": {
+    "binaryName": "msf_ffi"
   },
   "engines": {
     "node": ">=20"
