@@ -1,0 +1,5 @@
+/target/
+/native/*.node
+.DS_Store
+
+AGENTS.local.md

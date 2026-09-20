@@ -1,0 +1,38 @@
+{
+  "name": "msf-ffi",
+  "version": "0.1.0",
+  "description": "Complete JavaScript and TypeScript bindings for Rust security-framework on macOS",
+  "type": "module",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.js"
+    }
+  },
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "cipher-suites.js",
+    "native/*.node",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "cargo build --release && node scripts/install-native.js",
+    "build:debug": "cargo build && node scripts/install-native.js debug",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "os": [
+    "darwin"
+  ],
+  "cpu": [
+    "arm64",
+    "x64"
+  ],
+  "license": "MIT"
+}
