@@ -1,6 +1,6 @@
 {
   "name": "macos-security-framework",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Complete JavaScript and TypeScript bindings for Rust security-framework on macOS",
   "keywords": [
     "macos",

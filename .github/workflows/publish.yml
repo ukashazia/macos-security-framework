@@ -1,20 +1,17 @@
-name: CI
+name: Publish
 
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+  workflow_call:
+    secrets:
+      NPM_TOKEN:
+        required: true
 
 permissions:
   contents: read
-
-concurrency:
-  group: ci-${{ github.ref }}
-  cancel-in-progress: true
+  id-token: write
 
 jobs:
-  test:
+  npm:
     runs-on: macos-latest
     timeout-minutes: 30
     steps:
@@ -22,12 +19,14 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: 1.88.0
+          targets: aarch64-apple-darwin,x86_64-apple-darwin
           components: clippy,rustfmt
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
+          registry-url: https://registry.npmjs.org
       - uses: extractions/setup-just@v3
-      - run: npm ci --ignore-scripts
-      - run: just test
-      - run: just check
+      - run: just publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
