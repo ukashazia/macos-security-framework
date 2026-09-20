@@ -45,13 +45,15 @@
     "test": "node --test test/*.test.js",
     "verify": "npm run check && npm test",
     "verify:artifacts": "node scripts/verify-artifacts.mjs",
-    "release:check": "npm run verify && npm run verify:artifacts && npm pack --dry-run --ignore-scripts",
+    "verify:version": "node scripts/verify-version.mjs",
+    "release:check": "npm run verify && npm run verify:version && npm run verify:artifacts && npm pack --dry-run --ignore-scripts",
     "prepack": "npm run verify:artifacts",
     "prepublishOnly": "npm run release:check"
   },
   "devDependencies": {
     "@napi-rs/cli": "^3.0.0",
     "@types/node": "^24.0.0",
+    "smol-toml": "^1.8.0",
     "typescript": "^6.0.0"
   },
   "engines": {
