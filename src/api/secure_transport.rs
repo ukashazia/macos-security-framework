@@ -17,6 +17,7 @@ use security_framework::secure_transport::{
     SslProtocol as NativeSslProtocol, SslProtocolSide as NativeSslProtocolSide,
     SslStream as NativeSslStream,
 };
+use security_framework_sys::cipher_suite::SSLCipherSuite;
 
 use super::error::napi_error;
 use super::security::{SecCertificate, SecIdentity, SecTrust};
@@ -46,7 +47,7 @@ fn cipher_suites(values: Vec<u32>) -> Result<Vec<CipherSuite>> {
         .into_iter()
         .map(|value| {
             u16::try_from(value)
-                .map(CipherSuite::from_raw)
+                .map(|raw| CipherSuite::from_raw(SSLCipherSuite::from(raw)))
                 .map_err(|_| {
                     Error::new(
                         Status::InvalidArg,

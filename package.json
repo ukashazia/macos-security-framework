@@ -9,10 +9,17 @@
     "cryptography",
     "napi-rs"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ukashazia/msf-ffi.git"
+  },
+  "homepage": "https://github.com/ukashazia/msf-ffi#readme",
+  "bugs": {
+    "url": "https://github.com/ukashazia/msf-ffi/issues"
+  },
+  "license": "MIT",
+  "author": "Ukasha",
   "type": "module",
-  "sideEffects": false,
-  "main": "index.js",
-  "types": "index.d.ts",
   "exports": {
     ".": {
       "types": "./index.d.ts",
@@ -20,6 +27,8 @@
       "default": "./index.js"
     }
   },
+  "main": "index.js",
+  "types": "index.d.ts",
   "files": [
     "index.js",
     "index.d.ts",
@@ -45,14 +54,6 @@
     "@types/node": "^24.0.0",
     "typescript": "^6.0.0"
   },
-  "napi": {
-    "binaryName": "msf_ffi",
-    "packageName": "msf-ffi",
-    "targets": [
-      "aarch64-apple-darwin",
-      "x86_64-apple-darwin"
-    ]
-  },
   "engines": {
     "node": ">=20"
   },
@@ -63,8 +64,16 @@
     "arm64",
     "x64"
   ],
-  "license": "MIT",
   "publishConfig": {
     "access": "public"
+  },
+  "sideEffects": false,
+  "napi": {
+    "binaryName": "msf_ffi",
+    "packageName": "msf-ffi",
+    "targets": [
+      "aarch64-apple-darwin",
+      "x86_64-apple-darwin"
+    ]
   }
 }

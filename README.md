@@ -4,18 +4,27 @@ Synchronous JavaScript and TypeScript bindings for Apple’s Security framework,
 
 The binding covers certificates, identities, keys and signatures, keychains and passwords, item search/add/update, policies and trust, trust settings, PKCS#12 and general imports, CMS, Authorization Services, code signing, cryptographic transforms, randomness, cipher suites, and Secure Transport. macOS-only extension traits are folded into the corresponding JavaScript classes.
 
-## Requirements
+## Installation
 
 - macOS 12 or newer
 - Node.js 20 or newer
+
+```sh
+npm install msf-ffi
+```
+
+The npm package includes native addons for Apple Silicon and Intel Macs, so consumers do not need Rust or Xcode. The correct addon is selected automatically at runtime.
+
+## Build and test
+
+Building from source additionally requires:
+
 - Rust 1.88 or newer
 - Xcode Command Line Tools
 - [`just`](https://github.com/casey/just) for the convenience recipes
 
-## Build and test
-
 ```sh
-npm install
+npm ci --ignore-scripts
 just build
 just test
 just check

@@ -3,6 +3,7 @@
 /index.js
 /index.d.ts
 /*.node
+/*.tgz
 .DS_Store
 
 AGENTS.local.md
