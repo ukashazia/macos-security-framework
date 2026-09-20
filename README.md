@@ -37,7 +37,7 @@ just check
 Published tarballs contain native binaries for both Apple Silicon and Intel Macs. To publish a release:
 
 1. Add an npm granular access token with publish permission as the GitHub repository secret `NPM_TOKEN`.
-2. Update `version` in `package.json` and `package-lock.json`.
+2. Run `just bump patch` (or `minor`, `major`, or an exact version) to update the npm and Rust package versions together.
 3. Create and publish a non-prerelease GitHub Release tagged `v<version>`, such as `v0.1.0`.
 
 The release workflow calls only `just publish`. That recipe verifies the release tag, installs locked dependencies, builds both architectures, runs the npm publish lifecycle checks, and publishes the public package with provenance. Prereleases are ignored. Regular CI runs the same release checks and uploads the verified dual-architecture npm tarball as a build artifact.
